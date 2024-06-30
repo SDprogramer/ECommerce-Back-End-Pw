@@ -6,6 +6,8 @@ const mongoose = require("mongoose")
 const app = express() // Express operator -> function
 const server_config = require("./configs/server.config")
 const db_config = require("./configs/db.config")
+const user_model = require("./models/user.model")
+const bcrypt = require("bcryptjs")
 
 
 /**
@@ -22,9 +24,35 @@ db.on("error", ()=>{
 
 db.once("open", ()=>{
     console.log("Connected to mongoDb")
+    init()
 })
 
+async function init() {
+    try {
+        let user = await user_model.findOne({userId : "admin"})
 
+        if(user) {
+            console.log("Admin is already present")
+            return
+        }
+    }catch(err) {
+        console.log("Error while reading the data", err)
+    }
+
+    try {
+        user = await user_model.create({
+            name : "Soumyadeep",
+            userId : "admin",
+            emailId : "soumyadeep.dey162003@gmail.com",
+            userType : "ADMIN",
+            password : bcrypt.hashSync("ADMIN-PASSWORD", 8) // Encrypt password
+        })
+        console.log("Admin created", user)
+
+    }catch(err) {
+        console.log("Error while creating admin", err)
+    }
+}
 
 /**
  * Start the server
@@ -39,4 +67,4 @@ db.once("open", ()=>{
 
 app.listen(server_config.PORT, ()=>{
     console.log("Server started at port number : ", server_config.PORT)
-} )
+})
