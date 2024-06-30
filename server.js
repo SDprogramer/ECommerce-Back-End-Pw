@@ -9,6 +9,7 @@ const db_config = require("./configs/db.config")
 const user_model = require("./models/user.model")
 const bcrypt = require("bcryptjs")
 
+app.use(express.json()) // Middle ware
 
 /**
  * Create an admin user at starting of application if not already present
@@ -45,7 +46,7 @@ async function init() {
             userId : "admin",
             emailId : "soumyadeep.dey162003@gmail.com",
             userType : "ADMIN",
-            password : bcrypt.hashSync("ADMIN-PASSWORD", 8) // Encrypt password
+            password : bcrypt.hashSync("Your Password Here", 8) // Encrypt password
         })
         console.log("Admin created", user)
 
@@ -53,6 +54,12 @@ async function init() {
         console.log("Error while creating admin", err)
     }
 }
+
+/**
+ * Stitch the route to server
+ */
+
+require("./routes/auth.route")(app)
 
 /**
  * Start the server
